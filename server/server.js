@@ -29,6 +29,8 @@ mongoose
 // app.use(clerkMiddleware());
 
 //   connect api route
+
+app.use("/common-api", require("./API/commonApi"));
 app.use("/user-api", require("./API/userApi"));
 app.use("/author-api", require("./API/authorApi"));
 app.use("/admin-api", require("./API/adminApi"));
