@@ -4,6 +4,7 @@ import { userAuthorContextObj } from "../contexts/UserAuthorContext.jsx";
 import { adminContextObj } from "../contexts/AdminContext.jsx";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
+// import { search } from "../../../../server/API/commonApi.js";
 
 function Home() {
   const { currentUser, setCurrentUser } = useContext(userAuthorContextObj);
@@ -83,24 +84,69 @@ function Home() {
     }
   }
 
+  // loading user from DB
+  async function findUserRole(user) {
+    let res = await axios.get("http://localhost:3000/common-api/get-all");
+    console.log(res.data.payload);
+    const allUsersAuthors = res.data.payload;
+    let search_res = allUsersAuthors.find(
+      (obj) => obj.email === user.emailAddresses[0].emailAddress
+    );
+    // console.log(search_res);
+    if (search_res !== undefined) {
+      setCurrentUser({ ...currentUser, ...search_res });
+
+      // return search_res.role;
+      return search_res.role;
+    } else {
+      res = await axios.get("http://localhost:3000/common-api/get-admins");
+      // console.log(res.data.payload);
+      const all_admins = res.data.payload;
+      search_res = all_admins.find(
+        (obj) => user.emailAddresses[0].emailAddress === obj.email
+      );
+      if (search_res !== undefined) return "admin";
+    }
+    return "new-user";
+    // let res = allUsersAuthors.find()
+  }
+
+  // if role was already selected
   useEffect(() => {
     if (isLoaded === true && isSignedIn === true) {
-      setCurrentUser({
+      setCurrentUser((currentUser) => ({
         ...currentUser,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.emailAddresses[0].emailAddress,
         profileImageUrl: user.imageUrl,
-      });
+      }));
+
+      const fetchrole = async () => {
+        const role = await findUserRole(user);
+        const email = user.emailAddresses[0].emailAddress;
+        if (role != "new-user") {
+          if (role === "author" && error.length == 0)
+            navigate(`author-profile/${email}`);
+          if (role === "admin" && error.length == 0)
+            navigate(`admin-profile/${email}`);
+          if (role === "user" && error.length == 0) {
+            navigate(`user-profile/${email}`);
+          }
+        }
+
+        console.log(role);
+      };
+      fetchrole();
     }
+    console.log(currentUser);
   }, [isLoaded]);
 
   // selecting role first time
   useEffect(() => {
-    
     if (currentUser?.role === "author" && error.length == 0)
       navigate(`author-profile/${currentUser.email}`);
-    
+
     if (currentUser?.role === "admin" && error.length == 0)
       navigate(`admin-profile/${currentUser.email}`);
     if (currentUser?.role === "user" && error.length == 0) {
