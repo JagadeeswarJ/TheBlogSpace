@@ -38,7 +38,7 @@ authorApp.get(
     // console.log("Incoming Request Headers:", req.headers);
     console.log("Incoming Auth Token:", req.headers.authorization);
     //read all articles from db
-    const listOfArticles = await Article.find({ isArticleActive: true });
+    const listOfArticles = await Article.find();
     res.status(200).send({ message: "articles", payload: listOfArticles });
   })
 );

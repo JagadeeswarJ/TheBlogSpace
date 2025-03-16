@@ -8,9 +8,9 @@ function UserProfile() {
   return (
     <div>
       {currentUser.isActive ? (
-        <div className="auth">
+        <div className="">
           <ul className="flex justify-around list-none font-light">
-            <li className="nav-item bg-cyan-700 p-72">
+            <li className="bg-cyan-700 p-72">
               <NavLink to="articles" className="nav-link">
                 Articles
               </NavLink>

@@ -87,7 +87,7 @@ function Home() {
   // loading user from DB
   async function findUserRole(user) {
     let res = await axios.get("http://localhost:3000/common-api/get-all");
-    console.log(res.data.payload);
+    // console.log(res.data.payload);
     const allUsersAuthors = res.data.payload;
     let search_res = allUsersAuthors.find(
       (obj) => obj.email === user.emailAddresses[0].emailAddress
@@ -126,6 +126,8 @@ function Home() {
         const role = await findUserRole(user);
         const email = user.emailAddresses[0].emailAddress;
         if (role != "new-user") {
+          currentUser.role = role;
+          localStorage.setItem("currentUser", JSON.stringify(currentUser));
           if (role === "author" && error.length == 0)
             navigate(`author-profile/${email}`);
           if (role === "admin" && error.length == 0)

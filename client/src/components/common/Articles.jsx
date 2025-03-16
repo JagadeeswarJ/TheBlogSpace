@@ -11,8 +11,10 @@ function Articles() {
   const { getToken } = useAuth();
   const [articleCategory, setArticleCategory] = useState("all");
   const [loading, setLoading] = useState(true);
-
+  const [role, setRole] = useState("");
   async function getArticles() {
+    setRole(JSON.parse(localStorage.getItem("currentUser"))?.role);
+    // console.log(r);
     // make authenticated req
     setLoading(true);
     try {
@@ -74,10 +76,12 @@ function Articles() {
         )}
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 ">
           {articles
-            .filter((articleObj) =>
-              articleCategory === "all"
-                ? true
-                : articleObj.category === articleCategory
+            .filter(
+              (articleObj) =>
+                (articleCategory === "all"
+                  ? true
+                  : articleObj.category === articleCategory) &&
+                (role === "user" ? articleObj.isArticleActive === true : true)
             )
             .map((articleObj) => (
               <div className="col" key={articleObj.articleId}>
